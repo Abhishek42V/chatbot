@@ -4,7 +4,7 @@ import openai
 import pyttsx3  # Importing the pyttsx3 library.ensure that espeak is installed and espeak/command-line is in system path variables
 
 # Initialize the text-to-speech engine
-tts_engine = pyttsx3.init()
+tts_engine = pyttsx3.init(driverName='sapi5') # Specify sapi5 for Windows
 
 # Show title and description.
 st.title("💬 Multilingual Chatbot with Translation")

@@ -1,10 +1,8 @@
 import streamlit as st
 import random
 import openai
-import pyttsx3  # Importing the pyttsx3 library.ensure that espeak is installed and espeak/command-line is in system path variables
-
-# Initialize the text-to-speech engine
-tts_engine = pyttsx3.init(driverName='sapi5') # Specify sapi5 for Windows
+from gtts import gTTS
+import os
 
 # Show title and description.
 st.title("💬 Multilingual Chatbot with Translation")
@@ -69,10 +67,12 @@ else:
         translation = response['choices'][0]['message']['content'].strip()
         return translation
 
-    # Function to speak text using pyttsx3
+    # Function to speak text using gTTS
     def speak_text(text):
-        tts_engine.say(text)  # Convert text to speech
-        tts_engine.runAndWait()  # Block while processing all currently queued commands
+        tts = gTTS(text=text, lang='en')  # Specify the language for TTS (default is English)
+        tts_file = "temp_audio.mp3"  # Temporary audio file name
+        tts.save(tts_file)  # Save the audio file
+        return tts_file
 
     # Text input for user prompt
     user_input = st.text_input("Enter a sentence to translate:")
@@ -95,4 +95,6 @@ else:
     if st.button("Speak") and user_input:
         selected_language = languages[target_language]
         translated_text = translate_text(user_input, target_language)
-        speak_text(translated_text)  # Speak the translated text
+        audio_file = speak_text(translated_text)  # Speak the translated text
+        st.audio(audio_file, format='audio/mp3')  # Play the audio file
+        os.remove(audio_file)  # Remove the audio file after playing

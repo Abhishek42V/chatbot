@@ -1,13 +1,16 @@
 import streamlit as st
 import random
 import openai
-import os
+import pyttsx3  # Importing the pyttsx3 library
+
+# Initialize the text-to-speech engine
+tts_engine = pyttsx3.init()
 
 # Show title and description.
 st.title("💬 Multilingual Chatbot with Translation")
 st.write(
     "This chatbot generates and translates sentences to various languages using OpenAI's GPT model. "
-    "You can also have the translations spoken out loud using OpenAI's Text-to-Speech (TTS). "
+    "You can also have the translations spoken out loud using Text-to-Speech (TTS). "
 )
 
 # Ask user for their OpenAI API key via `st.text_input`.
@@ -66,12 +69,10 @@ else:
         translation = response['choices'][0]['message']['content'].strip()
         return translation
 
-    # Function to speak text using OpenAI's TTS (placeholder, as OpenAI TTS model isn't available yet)
+    # Function to speak text using pyttsx3
     def speak_text(text):
-        # Placeholder for OpenAI's TTS functionality. If OpenAI TTS is available, use its API here.
-        # For now, it returns a simulated message.
-        st.warning("OpenAI TTS model is not available yet.")
-        return None
+        tts_engine.say(text)  # Convert text to speech
+        tts_engine.runAndWait()  # Block while processing all currently queued commands
 
     # Text input for user prompt
     user_input = st.text_input("Enter a sentence to translate:")
@@ -90,10 +91,8 @@ else:
         translated_text = translate_text(user_input, target_language)
         st.write(f"Translated to {target_language}: {translated_text}")
 
-    # Button to speak the translation (currently a placeholder)
+    # Button to speak the translation
     if st.button("Speak") and user_input:
         selected_language = languages[target_language]
         translated_text = translate_text(user_input, target_language)
-        audio_response = speak_text(translated_text)
-        if audio_response:
-            st.audio(audio_response)  # Streamlit audio player to play the speech output
+        speak_text(translated_text)  # Speak the translated text

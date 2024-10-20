@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 import openai
-import pyttsx3  # Importing the pyttsx3 library.ensure that espeak is installed
+import pyttsx3  # Importing the pyttsx3 library.ensure that espeak is installed and espeak/command-line is in system path variables
 
 # Initialize the text-to-speech engine
 tts_engine = pyttsx3.init()

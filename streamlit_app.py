@@ -1,11 +1,7 @@
 import streamlit as st
 import random
 import openai
-#from dotenv import load_dotenv
 import os
-
-# Load environment variables from .env file
-#load_dotenv()
 
 # Show title and description.
 st.title("💬 Multilingual Chatbot with Translation")

@@ -56,7 +56,7 @@ else:
     def translate_text(text, target_language):
         prompt = f"Translate the following text to {target_language}: {text}"
         response = openai.Completion.create(
-            engine="text-davinci-003",
+            engine="gpt-4",
             prompt=prompt,
             max_tokens=100
         )

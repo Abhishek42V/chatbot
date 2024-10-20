@@ -52,24 +52,26 @@ else:
         ]
         return random.choice(sentences)
 
-    # Function to translate text using OpenAI's model
+    # Function to translate text using OpenAI's GPT model
     def translate_text(text, target_language):
-        prompt = f"Translate the following text to {target_language}: {text}"
-        response = openai.Completion.create(
-            engine="gpt-4",
-            prompt=prompt,
+        messages = [
+            {"role": "system", "content": f"You are a helpful assistant that translates text to {target_language}."},
+            {"role": "user", "content": f"Translate the following text: {text}"}
+        ]
+        response = openai.ChatCompletion.create(
+            model="gpt-4",  # or gpt-4 based on your needs
+            messages=messages,
             max_tokens=100
         )
-        translation = response.choices[0].text.strip()
+        translation = response['choices'][0]['message']['content'].strip()
         return translation
 
-    # Function to speak text using OpenAI's TTS
+    # Function to speak text using OpenAI's TTS (placeholder, as OpenAI TTS model isn't available yet)
     def speak_text(text):
-        response = openai.Audio.create(
-            model="whisper-1",
-            prompt=text
-        )
-        return response['data']['audio']
+        # Placeholder for OpenAI's TTS functionality. If OpenAI TTS is available, use its API here.
+        # For now, it returns a simulated message.
+        st.warning("OpenAI TTS model is not available yet.")
+        return None
 
     # Text input for user prompt
     user_input = st.text_input("Enter a sentence to translate:")
@@ -88,10 +90,10 @@ else:
         translated_text = translate_text(user_input, target_language)
         st.write(f"Translated to {target_language}: {translated_text}")
 
-    # Button to speak the translation
+    # Button to speak the translation (currently a placeholder)
     if st.button("Speak") and user_input:
         selected_language = languages[target_language]
         translated_text = translate_text(user_input, target_language)
         audio_response = speak_text(translated_text)
-        st.audio(audio_response)  # Streamlit audio player to play the speech output
-
+        if audio_response:
+            st.audio(audio_response)  # Streamlit audio player to play the speech output

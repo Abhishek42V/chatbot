@@ -1,58 +1,101 @@
 import streamlit as st
-from openai import OpenAI
+import random
+import openai
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Show title and description.
-st.title("💬 Chatbot")
+st.title("💬 Multilingual Chatbot with Translation")
 st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-4o-mini model to generate responses. "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
-    "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
+    "This chatbot generates and translates sentences to various languages using OpenAI's GPT model. "
+    "You can also have the translations spoken out loud using OpenAI's Text-to-Speech (TTS). "
 )
 
 # Ask user for their OpenAI API key via `st.text_input`.
-# Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-# via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
 openai_api_key = st.text_input("OpenAI API Key", type="password")
 if not openai_api_key:
     st.info("Please add your OpenAI API key to continue.", icon="🗝️")
 else:
+    openai.api_key = openai_api_key
 
-    # Create an OpenAI client.
-    client = OpenAI(api_key=openai_api_key)
+    # Define available languages for translation
+    languages = {
+        'English': 'en',
+        'Hindi': 'hi',
+        'French': 'fr',
+        'German': 'de',
+        'Spanish': 'es',
+        'Sanskrit': 'sa'
+    }
 
-    # Create a session state variable to store the chat messages. This ensures that the
-    # messages persist across reruns.
+    # Create a session state variable to store the chat messages
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Display the existing chat messages via `st.chat_message`.
+    # Display existing chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # Create a chat input field to allow the user to enter a message. This will display
-    # automatically at the bottom of the page.
-    if prompt := st.chat_input("What is up?"):
+    # Function to generate random sentences for learning a new language
+    def generate_skill_sentence():
+        sentences = [
+            "Hello, how are you?",
+            "What is your name?",
+            "I need help.",
+            "Where is the nearest bus stop?",
+            "Can you show me the way?",
+            "How much does this cost?",
+            "Thank you for your help.",
+            "I would like some water.",
+            "Excuse me, where is the restroom?",
+            "What time is it?"
+        ]
+        return random.choice(sentences)
 
-        # Store and display the current prompt.
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # Generate a response using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-4o-mini-2024-07-18",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
-            max_tokens=150,  # You can adjust this value based on your needs
-            temperature=0.0  # Adjusts creativity (0.0 to 1.0)
+    # Function to translate text using OpenAI's model
+    def translate_text(text, target_language):
+        prompt = f"Translate the following text to {target_language}: {text}"
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=100
         )
+        translation = response.choices[0].text.strip()
+        return translation
 
-        # Stream the response to the chat using `st.write_stream`, then store it in 
-        # session state.
-        with st.chat_message("assistant"):
-            response = st.write_stream(stream)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+    # Function to speak text using OpenAI's TTS
+    def speak_text(text):
+        response = openai.Audio.create(
+            model="whisper-1",
+            prompt=text
+        )
+        return response['data']['audio']
+
+    # Text input for user prompt
+    user_input = st.text_input("Enter a sentence to translate:")
+
+    # Dropdown to select target language
+    target_language = st.selectbox("Choose a language to translate to:", list(languages.keys()))
+
+    # Button to generate random sentence
+    if st.button("Generate"):
+        random_sentence = generate_skill_sentence()
+        st.write(f"Generated Sentence: {random_sentence}")
+
+    # Button to translate user input
+    if st.button("Translate") and user_input:
+        selected_language = languages[target_language]
+        translated_text = translate_text(user_input, target_language)
+        st.write(f"Translated to {target_language}: {translated_text}")
+
+    # Button to speak the translation
+    if st.button("Speak") and user_input:
+        selected_language = languages[target_language]
+        translated_text = translate_text(user_input, target_language)
+        audio_response = speak_text(translated_text)
+        st.audio(audio_response)  # Streamlit audio player to play the speech output
+

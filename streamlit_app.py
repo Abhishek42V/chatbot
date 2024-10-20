@@ -4,7 +4,7 @@ from openai import OpenAI
 # Show title and description.
 st.title("💬 Chatbot")
 st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
+    "This is a simple chatbot that uses OpenAI's GPT-4o-mini model to generate responses. "
     "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
     "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
 )
@@ -41,12 +41,14 @@ else:
 
         # Generate a response using the OpenAI API.
         stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini-2024-07-18",
             messages=[
                 {"role": m["role"], "content": m["content"]}
                 for m in st.session_state.messages
             ],
             stream=True,
+            max_tokens=150,  # You can adjust this value based on your needs
+            temperature=0.0  # Adjusts creativity (0.0 to 1.0)
         )
 
         # Stream the response to the chat using `st.write_stream`, then store it in 

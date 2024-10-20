@@ -69,7 +69,7 @@ else:
 
     # Function to speak text using gTTS
     def speak_text(text):
-        tts = gTTS(text=text, lang='en')  # Specify the language for TTS (default is English)
+        tts = gTTS(text=text, lang='hi')  # Specify the language for TTS (default is English)->changed to hindi
         tts_file = "temp_audio.mp3"  # Temporary audio file name
         tts.save(tts_file)  # Save the audio file
         return tts_file

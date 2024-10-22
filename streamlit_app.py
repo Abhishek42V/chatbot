@@ -152,7 +152,7 @@ else:
             {"role": "user", "content": f"Translate the following text: {text}"}
         ]
         response = openai.ChatCompletion.create(
-            model="gpt-4",  # or gpt-4 based on your needs
+            model="gpt-4o-mini-2024-07-18",  # or gpt-4o-mini-2024-07-18 or gpt-4
             messages=messages,
             max_tokens=100
         )

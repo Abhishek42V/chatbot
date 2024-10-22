@@ -28,13 +28,7 @@ else:
         'Sanskrit': 'sa'
     }
 
-
-     # Create a session state variable to store the translation
-    if "translated_text" not in st.session_state:
-        st.session_state.translated_text = ""
-
-    """
-     # Create a session state variable to store the chat messages
+    # Create a session state variable to store the chat messages
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
@@ -42,8 +36,7 @@ else:
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-    """  
-   
+
     # Function to generate random sentences for learning a new language
     def generate_skill_sentence():
         sentences = [
@@ -187,12 +180,8 @@ else:
     # Button to translate user input
     if st.button("Translate") and user_input:
         selected_language = languages[target_language]
-        st.session_state.translated_text = translate_text(user_input, target_language)
-        st.write(f"Translated to {target_language}: {st.session_state.translated_text}")
-
-    # Show the translated text if it exists
-    if st.session_state.translated_text:
-        st.write(f"Translated to {target_language}: {st.session_state.translated_text}")
+        translated_text = translate_text(user_input, target_language)
+        st.write(f"Translated to {target_language}: {translated_text}")
 
     # Button to speak the translation
     if st.button("Speak") and user_input:
